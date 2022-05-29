@@ -1,3 +1,4 @@
+api_requests.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -11,5 +12,3 @@ pip-delete-this-directory.txt
 env/
 venv/
 ENV/
-
-api_requests.py
