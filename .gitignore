@@ -11,3 +11,5 @@ pip-delete-this-directory.txt
 env/
 venv/
 ENV/
+
+api_requests.py
