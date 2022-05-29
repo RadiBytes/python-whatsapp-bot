@@ -73,19 +73,3 @@ def message_location(url: str, token: str, phone_num: int, text: str, web_page_p
     response = requests.post(url, headers=headers(token), data=payload)
     print(response.text)
     return response
-
-
-a = Inline_button("a butt on")
-b = Inline_button("a btton", "Sayhi")
-c = Inline_button("a buton", "Say hi")
-d = Inline_button("a butanol", "Sa y hi")
-keb = Inline_keyboard([a, b, ])
-
-m = List_item("Anti")
-p = List_item("Anda")
-secta = List_section("Saection a", [m, p])
-sectb = List_section("Saection a", [m, p])
-list_mrk = Inline_list("Open", [m, p])
-
-# message_interactive(
-#     2348138686782, "Hi, I'm \n*Radi* , Sending ... ", keb, header='Radi', footer='big foot')
