@@ -18,7 +18,7 @@ context = Context()
 
 class user_context():
     """Object that manages a specific user's data in a conversation.
-    The user's phone number is used as the id"""
+    The user's phone number id is used as the id"""
 
     def __init__(self, phone_num) -> None:
         if not context.user_exists(phone_num):

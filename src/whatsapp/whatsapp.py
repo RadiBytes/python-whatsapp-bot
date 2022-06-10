@@ -1,3 +1,4 @@
+from .dispatcher import Dispatcher
 from .message import (
     message_interactive, message_text, message_location)
 from .markup import Reply_markup
@@ -5,10 +6,14 @@ from typing import Union
 
 
 class Whatsapp():
-    def __init__(self, _id: int, token: str) -> None:
-        self.id = _id
+    def __init__(self, number_id: int, token: str) -> None:
+        self.id = number_id
         self.token = token
         self.msg_url = f"https://graph.facebook.com/v13.0/{str(self.id)}/messages"
+        self.dispatcher = Dispatcher(self)
+
+    def process_update(self, update):
+        return self.dispatcher.process_update(update)
 
     def send_text_message(self, phone_num: int, text: str, web_page_preview=True):
         """Sends text message

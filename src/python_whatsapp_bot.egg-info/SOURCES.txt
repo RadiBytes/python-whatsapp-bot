@@ -1,0 +1,14 @@
+LICENSE
+README.md
+pyproject.toml
+setup.cfg
+src/python_whatsapp_bot.egg-info/PKG-INFO
+src/python_whatsapp_bot.egg-info/SOURCES.txt
+src/python_whatsapp_bot.egg-info/dependency_links.txt
+src/python_whatsapp_bot.egg-info/top_level.txt
+src/whatsapp/__init__.py
+src/whatsapp/dispatcher.py
+src/whatsapp/markup.py
+src/whatsapp/message.py
+src/whatsapp/user_context.py
+src/whatsapp/whatsapp.py
