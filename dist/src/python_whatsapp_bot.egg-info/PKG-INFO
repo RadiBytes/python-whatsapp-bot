@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: python-whatsapp-bot
+Version: 0.0.1
+Summary: A whatsapp client library for python using the new WhatsApp cloud API
+Home-page: https://github.com/Radi-dev/python-whatsapp-cloud-bot
+Author: Evaristus Radi
+Author-email: evaradi18@gmail.com
+Project-URL: Bug Tracker, https://github.com/Radi-dev/python-whatsapp-cloud-bot/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# python-whatsapp-bot
+A whatsapp client library for python using the new WhatsApp cloud API.
