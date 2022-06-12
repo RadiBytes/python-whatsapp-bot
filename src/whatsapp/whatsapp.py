@@ -1,4 +1,4 @@
-from .dispatcher import Dispatcher
+from .dispatcher import Dispatcher, Update
 from .message import (
     message_interactive, mark_as_read, message_text, message_location)
 from .markup import Reply_markup
@@ -24,11 +24,11 @@ class Whatsapp():
         """Mark any message as read"""
         return mark_as_read(update, self.msg_url, self.token)
 
-    def reply_text(self, update, text, web_page_preview=True):
+    def reply_text(self, update: Update, text, web_page_preview=True):
         return self.send_text_message(
-            int(update["from"]), text, web_page_preview=web_page_preview)
+            update.user_phone_number, text, web_page_preview=web_page_preview)
 
-    def send_text_message(self, phone_num: int, text: str, web_page_preview=True):
+    def send_text_message(self, phone_num: str, text: str, web_page_preview=True):
         """Sends text message
         Args:
             phone_num:(int) Recipeint's phone number
@@ -37,7 +37,7 @@ class Whatsapp():
         """
         return message_text(self.msg_url, self.token, phone_num, text, web_page_preview=web_page_preview)
 
-    def send_interactive_message(self, phone_num: int, text: str, reply_markup: Reply_markup, header: str = None, footer: str = None, web_page_preview=True):
+    def send_interactive_message(self, phone_num: str, text: str, reply_markup: Reply_markup, header: str = None, footer: str = None, web_page_preview=True):
         """Sends text message
         Args:
             phone_num:(int) Recipeint's phone number
@@ -47,7 +47,7 @@ class Whatsapp():
         """
         return message_interactive(self.msg_url, self.token, phone_num, text, reply_markup, header=header, footer=footer, web_page_preview=web_page_preview)
 
-    def reply_interactive(self, update, text: str, reply_markup: Reply_markup, header: str = None, footer: str = None, web_page_preview=True):
+    def reply_interactive(self, update: Update, text: str, reply_markup: Reply_markup, header: str = None, footer: str = None, web_page_preview=True):
         """Sends text message
         Args:
             phone_num:(int) Recipeint's phone number
@@ -55,4 +55,4 @@ class Whatsapp():
             web_page_preview:(bool),optional. Turn web page preview of links on/off
             reply_keyboard_markup:(Reply_keyboard),optional. A keyboard markup object to be sent with the text
         """
-        return self.send_interactive_message(int(update["from"]), text, reply_markup, header=header, footer=footer, web_page_preview=web_page_preview)
+        return self.send_interactive_message(update.user_phone_number, text, reply_markup, header=header, footer=footer, web_page_preview=web_page_preview)

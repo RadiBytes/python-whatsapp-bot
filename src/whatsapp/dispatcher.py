@@ -16,6 +16,8 @@ class Dispatcher:
         if not keys_exists(update, "entry"):
             return
         value = update["entry"][0]["changes"][0]["value"]
+        self.value = value
+        print("Value is:", value)
         if not keys_exists(value, "metadata", "phone_number_id"):
             return
         if value["metadata"]["phone_number_id"] == self.bot.id:
@@ -43,7 +45,7 @@ class Dispatcher:
             if not handler.filter_check(message):
                 return False
             print("passed filtering")
-            handler.run(self.message)
+            handler.run(Update(self.value))
             return True
         return False
 
@@ -55,7 +57,7 @@ class Dispatcher:
 
     def message_handler(self, regex: str = None, func: Callable = None):
         def inner(function):
-            _handler = Message_handler(regex, func, function)
+            _handler = _Message_handler(regex, func, function)
             return self.add_handler(_handler)
         return inner
 
@@ -65,7 +67,7 @@ class Dispatcher:
     def conversation_handler(self, conv_start: Callable, fallback: Callable = None):
         def decorator(function):
             def wrapper(update):
-                _handler = Conversation_handler(
+                _handler = _Conversation_handler(
                     'regex', 'func', function)  # Fix from here------------
                 return self.add_handler(_handler)
             return wrapper
@@ -84,6 +86,7 @@ class Update_handler:
         self.regex = None
         self.func = None
         self.temp_filter = None
+        self.action = None
 
     def filter_check(self, msg) -> bool:
         if self.regex:
@@ -102,14 +105,8 @@ class Update_handler:
     def run(self, update):
         return self.action(update)
 
-    def mark_as_read(self, update):
-        q = {"messaging_product": "whatsapp",
-             "status": "read",
-             "message_id": "MESSAGE_ID"
-             }
 
-
-class Message_handler(Update_handler):
+class _Message_handler(Update_handler):
     def __init__(self, regex: str = None, func: Callable = None, action: Callable = None) -> None:
         super().__init__()
         self.name = "text"
@@ -123,7 +120,7 @@ class Location_handler(Update_handler):
         super().__init__()
 
 
-class Conversation_handler(Update_handler):
+class _Conversation_handler(Update_handler):
     def __init__(self, conv_start: Callable, fallback: Callable = None) -> None:
         super().__init__()
         self.conv_start = conv_start
@@ -140,3 +137,14 @@ class Interactive_query_handler(Update_handler):
 class Media_handler(Update_handler):
     def __init__(self) -> None:
         super().__init__()
+
+
+class Update:
+    def __init__(self, update) -> None:
+        self.value = update
+        self.message = self.value["messages"][0]
+        self.user = self.value["contacts"][0]
+        self.user_display_name = self.user["profile"]["name"]
+        self.user_phone_number = self.user["wa_id"]
+        if keys_exists(self.message, "text", "body"):
+            self.message_text = self.message["text"]["body"]

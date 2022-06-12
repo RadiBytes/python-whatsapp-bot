@@ -20,7 +20,7 @@ def mark_as_read(update, url: str, token: str):
     return response
 
 
-def message_text(url: str, token: str, phone_num: int, text: str, web_page_preview=True):
+def message_text(url: str, token: str, phone_num: str, text: str, web_page_preview=True):
     payload = json.dumps({
         "messaging_product": "whatsapp",
         "to": str(phone_num),
@@ -34,7 +34,7 @@ def message_text(url: str, token: str, phone_num: int, text: str, web_page_previ
     return response
 
 
-def message_interactive(url: str, token: str, phone_num: int, text: str, reply_markup: Reply_markup, header: str = None, footer: str = None, web_page_preview=True):
+def message_interactive(url: str, token: str, phone_num: str, text: str, reply_markup: Reply_markup, header: str = None, footer: str = None, web_page_preview=True):
     if not isinstance(reply_markup, Reply_markup):
         raise ValueError("Reply markup must be a Reply_markup object")
     message_frame = {
@@ -43,7 +43,7 @@ def message_interactive(url: str, token: str, phone_num: int, text: str, reply_m
         "recipient_type": "individual",
         "type": "interactive",
         "interactive": {
-            "type": get_markup_type(reply_markup),
+            "type": _get_markup_type(reply_markup),
             "body": {
                 "text": text
             },
@@ -57,21 +57,19 @@ def message_interactive(url: str, token: str, phone_num: int, text: str, reply_m
         message_frame["interactive"]["footer"] = {
             "text": footer
         }
-    print('msg frm', message_frame)
     payload = json.dumps(message_frame)
     response = requests.post(url, headers=headers(token), data=payload)
-    print(response.text)
     return response
 
 
-def get_markup_type(markup):
+def _get_markup_type(markup):
     if isinstance(markup, Inline_keyboard):
         return "button"
     elif isinstance(markup, Inline_list):
         return "list"
 
 
-def message_location(url: str, token: str, phone_num: int, text: str, web_page_preview=True):
+def message_location(url: str, token: str, phone_num: str, text: str, web_page_preview=True):
     payload = json.dumps({
         "messaging_product": "whatsapp",
         "to": str(phone_num),
