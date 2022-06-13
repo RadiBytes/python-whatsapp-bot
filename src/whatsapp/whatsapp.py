@@ -16,6 +16,8 @@ class Whatsapp():
         self.token = token
         self.msg_url = f"https://graph.facebook.com/v13.0/{str(self.id)}/messages"
         self.dispatcher = Dispatcher(self, mark_as_read)
+        self.add_message_handler = self.dispatcher.add_message_handler
+        self.set_next_step_handler = self.dispatcher.set_next_handler
 
     def process_update(self, update):
         return self.dispatcher.process_update(update)
