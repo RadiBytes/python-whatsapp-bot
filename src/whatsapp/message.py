@@ -16,7 +16,7 @@ def mark_as_read(update, url: str, token: str):
                           "message_id": update["id"]
                           })
     response = requests.post(url, headers=headers(token), data=payload)
-    print(response.text)
+    # print(response.text)
     return response
 
 
@@ -30,7 +30,7 @@ def message_text(url: str, token: str, phone_num: str, text: str, web_page_previ
             "body": text,
             "preview_url": web_page_preview}})
     response = requests.post(url, headers=headers(token), data=payload)
-    print(response.text)
+    # print(response.text)
     return response
 
 
@@ -79,5 +79,5 @@ def message_location(url: str, token: str, phone_num: str, text: str, web_page_p
             "body": text,
             "preview_url": web_page_preview}})
     response = requests.post(url, headers=headers(token), data=payload)
-    print(response.text)
+    # print(response.text)
     return response

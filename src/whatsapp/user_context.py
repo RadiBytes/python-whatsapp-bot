@@ -16,11 +16,11 @@ class _Context:
 _context = _Context()
 
 
-class user_context():
+class User_context():
     """Object that manages a specific user's data in a conversation.
     The user's phone number id is used as the id"""
 
-    def __init__(self, phone_num) -> None:
+    def __init__(self, phone_num: str) -> None:
         if not _context._user_exists(phone_num):
             _context._add_user(phone_num)
         self.user_data = _context.users_data[str(phone_num)]

@@ -3,6 +3,7 @@ from .message import (
     message_interactive, mark_as_read, message_text, message_location)
 from .markup import Reply_markup
 from typing import Union
+from queue import Queue
 
 
 class Whatsapp():
@@ -12,6 +13,8 @@ class Whatsapp():
             id: Your phone number id provided by WhatsApp cloud
             token : Your token provided by WhatsApp cloud
             mark_as_read:(bool), Use to set whether incoming messages should be marked as read. Default is True"""
+        self.queue = Queue()
+        self.threaded = True
         self.id = number_id
         self.token = token
         self.msg_url = f"https://graph.facebook.com/v13.0/{str(self.id)}/messages"

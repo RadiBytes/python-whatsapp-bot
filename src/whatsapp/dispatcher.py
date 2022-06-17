@@ -1,15 +1,21 @@
+import inspect
 from typing import Callable, Union
 
 from .error_handlers import keys_exists
 import re
 import requests
+from .user_context import User_context
 #from queue import Queue
+from threading import Thread
 
 
 class Update:
     def __init__(self, update) -> None:
         self.value = update
-        self.message = self.value["messages"][0]
+        try:
+            self.message = self.value["messages"][0]
+        except:
+            self.message = {}
         self.user = self.value["contacts"][0]
         self.user_display_name = self.user["profile"]["name"]
         self.user_phone_number = self.user["wa_id"]
@@ -18,11 +24,12 @@ class Update:
 
 
 class Update_handler:
-    def __init__(self) -> None:
+    def __init__(self, context: bool = True) -> None:
         self.name = None
         self.regex = None
         self.func = None
         self.action = None
+        self.context = context
 
     def filter_check(self, msg) -> bool:
         if self.regex:
@@ -38,23 +45,37 @@ class Update_handler:
 
         return True
 
-    def run(self, update):
-        return self.action(update)
+    def run(self, update, *args, **kwargs):
+        new_kwargs = {
+            i: kwargs[i] for i in kwargs if i in inspect.getfullargspec(self.action).args}
+        print("nw kwgs is:  ", new_kwargs)
+        return self.action(update, *args, **new_kwargs)
 
 
 class Dispatcher:
-    def __init__(self, bot, mark_as_read: bool = True) -> None:
+    def __init__(self, bot, queue, mark_as_read: bool = True) -> None:
         self.bot = bot
+        self.queue = bot.queue
         self.registered_handlers = []  # list of handler instances
         self.mark_as_read = mark_as_read
         self.next_step_handler = {}
         self.fallback_function = None
 
     def process_update(self, update) -> None:
+        self.queue.put(update)
+        while True:
+            _update = self.queue.get()
+            if not self.bot.threaded:
+                self._process_queue(_update)
+            Thread(target=self._process_queue(_update)).start()
+            if self.queue.empty():
+                break
+
+    def _process_queue(self, update) -> None:
         if not keys_exists(update, "entry"):
             return
         value = update["entry"][0]["changes"][0]["value"]
-        self.value = value
+        #self.value = value
         if not keys_exists(value, "metadata", "phone_number_id"):
             return
         if value["metadata"]["phone_number_id"] == self.bot.id:
@@ -63,8 +84,8 @@ class Dispatcher:
             self.message = value["messages"][0]
             if self.mark_as_read:
                 self.bot.mark_as_read(self.message)
-            print("regd hands", self.registered_handlers)
-            print("regd nxts", self.next_step_handler)
+            # print("regd hands", self.registered_handlers)
+            # print("regd nxts", self.next_step_handler)
             update = Update(value)
             try:
                 users_next_step = self.next_step_handler[update.user_phone_number]
@@ -82,21 +103,24 @@ class Dispatcher:
                 if isinstance(handler, Update_handler) and handler.name == self.message["type"]:
                     if self.message["type"] == "text" or self.message["type"] == "interactive":
                         message = self.message["text"]["body"]
-                    res = self._check_and_run_handler(handler, message)
+                    res = self._check_and_run_handler(handler, value, message)
                     if res:
                         try:
                             if self.next_step_handler[update.user_phone_number]['next_step_handler'] == handler or self.next_step_handler[update.user_phone_number]['fallback_function'] == handler:
-                                self.next_step_handler[update.user_phone_number] = {
-                                }
+                                del self.next_step_handler[update.user_phone_number]
                             return
                         except KeyError:
                             return
 
-    def _check_and_run_handler(self, handler, message):
+    def _check_and_run_handler(self, handler, value, message):
         if hasattr(handler, 'filter_check'):
             if not handler.filter_check(message):
                 return False
-            handler.run(Update(self.value))
+            if handler.context:
+                handler.run(Update(value), context=User_context(
+                    Update(value).user_phone_number))
+            else:
+                handler.run(Update(value))
             return True
         return False
 
@@ -125,11 +149,10 @@ class Dispatcher:
         if handler_type == Message_handler:
             users_next['next_step_handler'] = Message_handler(
                 regex, func, function)
-            print("reggin self'd", self.next_step_handler, self.fallback_function)
 
-    def add_message_handler(self, regex: str = None, func: Callable = None):
+    def add_message_handler(self, regex: str = None, func: Callable = None, context: bool = False):
         def inner(function):
-            _handler = Message_handler(regex, func, function)
+            _handler = Message_handler(regex, func, function, context)
             return self.add_handler(_handler)
         return inner
 
@@ -144,8 +167,8 @@ class Dispatcher:
 
 
 class Message_handler(Update_handler):
-    def __init__(self, regex: str = None, func: Callable = None, action: Callable = None) -> None:
-        super().__init__()
+    def __init__(self, regex: str = None, func: Callable = None, action: Callable = None, context: bool = True) -> None:
+        super().__init__(context)
         self.name = "text"
         self.regex = regex
         self.func = func
