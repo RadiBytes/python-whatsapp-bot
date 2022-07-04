@@ -62,6 +62,22 @@ def message_interactive(url: str, token: str, phone_num: str, text: str, reply_m
     return response
 
 
+def message_template(url: str, token: str, phone_num: str, template_name: str):
+    payload = json.dumps({
+        "messaging_product": "whatsapp",
+        "to": str(phone_num),
+        "recipient_type": "individual",
+        "type": "template",
+                "template": {
+                    "name": template_name,
+                    "language": {
+                        "code": "en_US"
+                    }}})
+    response = requests.post(url, headers=headers(token), data=payload)
+    # print(response.text)
+    return response
+
+
 def _get_markup_type(markup):
     if isinstance(markup, Inline_keyboard):
         return "button"
