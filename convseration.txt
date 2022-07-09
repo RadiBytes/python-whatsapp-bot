@@ -1,0 +1,6 @@
+conv_handler(start, states,fallback)
+    Handler.conversation =None (initialy)
+    if start, set conversion == this instance
+    if conversation is true:
+        only check conversation states from current Handler
+ register convs separately?

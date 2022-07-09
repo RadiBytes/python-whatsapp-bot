@@ -60,7 +60,6 @@ class Update_handler:
         return True
 
     def run(self, update, *args, **kwargs):
-        print('kwar: ', kwargs)
         new_kwargs = {
             i: kwargs[i] for i in kwargs if i in inspect.getfullargspec(self.action).args}
         return self.action(update, *args, **new_kwargs)
@@ -130,7 +129,6 @@ class Dispatcher:
             if not keys_exists(value, "messages"):
                 return
             self.message = value["messages"][0]
-            print("msg here is", self.message)
             if self.mark_as_read:
                 self.bot.mark_as_read(self.message)
             # print("regd hands", self.registered_handlers)
@@ -157,9 +155,7 @@ class Dispatcher:
 
                     # handle interactive
                     if self.message["type"] == "interactive":
-                        print("message txt interac ", self.message)
                         if self.message["interactive"]["type"] == 'button_reply' and handler.button:
-                            print("message btn reply ")
                             message = self.message["interactive"]['button_reply']['id']
                         elif self.message["interactive"]["type"] == 'list_reply' and handler.list:
                             message = self.message["interactive"]['list_reply']['id']
