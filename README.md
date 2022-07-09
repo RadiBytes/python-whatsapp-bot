@@ -107,7 +107,7 @@ To send a pre-approved template message:
 For every message sent to your bot business account, whatsapp sends an object containing the message as a post request to a url which you have to provide beforehand. The url you provide should be able to process simple get and post requests. This url is the webhook url, and the object whatsapp sends to your url is the webhook.
 
 Now, you can write a small server with the Python Flask library to handle the webhook requests, but another problem arises if you're developing on a local server; whatsapp will not be able to send requests to your localhost url, so a quick fix would be to deploy your project to an online server each time you make a change to be able to test it.
-Once deployed, you can proceed to register the url of your deployed app using [this tutorial][(https://developers.facebook.com/docs/whatsapp/business-management-api/guides/set-up-webhooks)](https://github.com/Radi-dev/webhook-forwarder) from the platform.
+Once deployed, you can proceed to register the url of your deployed app using [this tutorial](https://developers.facebook.com/docs/whatsapp/business-management-api/guides/set-up-webhooks) from the platform.
 
 If you're like me however, you wouldn't want to always deploy before you test, you want to run everything on local first. In this case, you might decide to use Ngrok to tunnel a live url to your local server, but another issue arises; Since Ngrok generates a new url each time it is restarted, you'd have to constantly log in to facebook servers to register the newly generated url. I presume you don't want that hassle either. In this situation, a webhook forwarder can be deployed to a virtual server like Heroku, and it doesn't get modified. You register the deployed forwarder's url on Whatsapp servers, it receives all the webhook requests and forwards them to your local machine using ngrok.
 
@@ -125,6 +125,3 @@ This is an opensource project under `MIT License` so any one is welcome to contr
 
 1. [WhatsApp Cloud API official documentation](https://developers.facebook.com/docs/whatsapp/cloud-api/)
 
-## All the credit
-
-2. All other contributors
