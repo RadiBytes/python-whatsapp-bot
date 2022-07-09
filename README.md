@@ -58,7 +58,7 @@ To initialize the app instance, you need to specify the `TOKEN` and `phone_numbe
 
 Once initialized, you can start using some of the bot's features right away.
 
-##Sending Messages
+## Sending Messages
 
 To send a text message
 
@@ -74,18 +74,18 @@ Here an example
 >>> wa_bot.send_message('2348945434343', 'Your message here')
 ```
 
-##Sending Interactive Messages
+## Sending Interactive Messages
 
 For buttons and lists, use the same send_message endpoint but with a reply_markup parameter. e.g
 
-####For buttons
+#### For buttons
 
 ```python
 >>> from pyWhatsappCloudApiBot import Inline_keyboard # Import inline_keyboard for interactive buttons
 >>> wa_bot.send_message('2348945434343', 'This is a message with two buttons',reply_markup=Inline_keyboard(['First button', 'Second button']))
 ```
 
-####For lists
+#### For lists
 
 ```python
 >>> from pyWhatsappCloudApiBot import Inline_list, List_item # Import inline_list and List_item for interactive list
