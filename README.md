@@ -3,7 +3,9 @@
 A whatsapp client library for python utilizing the [WhatsApp Business Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api).
 
 [![Made in Nigeria](https://img.shields.io/badge/made%20in-nigeria-008751.svg?style=flat-square)](https://github.com/acekyd/made-in-nigeria)
-
+[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot)](https://pepy.tech/project/pyWhatsappCloudApiBot)
+[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot/month)](https://pepy.tech/project/pyWhatsappCloudApiBot)
+[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot/week)](https://pepy.tech/project/pyWhatsappCloudApiBot)
 
 ## Features supported
 
@@ -58,7 +60,7 @@ To initialize the app instance, you need to specify the `TOKEN` and `phone_numbe
 
 Once initialized, you can start using some of the bot's features right away.
 
-## Sending Messages
+##Sending Messages
 
 To send a text message
 
@@ -74,18 +76,18 @@ Here an example
 >>> wa_bot.send_message('2348945434343', 'Your message here')
 ```
 
-## Sending Interactive Messages
+##Sending Interactive Messages
 
 For buttons and lists, use the same send_message endpoint but with a reply_markup parameter. e.g
 
-#### For buttons
+####For buttons
 
 ```python
 >>> from pyWhatsappCloudApiBot import Inline_keyboard # Import inline_keyboard for interactive buttons
 >>> wa_bot.send_message('2348945434343', 'This is a message with two buttons',reply_markup=Inline_keyboard(['First button', 'Second button']))
 ```
 
-#### For lists
+####For lists
 
 ```python
 >>> from pyWhatsappCloudApiBot import Inline_list, List_item # Import inline_list and List_item for interactive list
@@ -107,7 +109,7 @@ To send a pre-approved template message:
 For every message sent to your bot business account, whatsapp sends an object containing the message as a post request to a url which you have to provide beforehand. The url you provide should be able to process simple get and post requests. This url is the webhook url, and the object whatsapp sends to your url is the webhook.
 
 Now, you can write a small server with the Python Flask library to handle the webhook requests, but another problem arises if you're developing on a local server; whatsapp will not be able to send requests to your localhost url, so a quick fix would be to deploy your project to an online server each time you make a change to be able to test it.
-Once deployed, you can proceed to register the url of your deployed app using [this tutorial](https://developers.facebook.com/docs/whatsapp/business-management-api/guides/set-up-webhooks) from the platform.
+Once deployed, you can proceed to register the url of your deployed app using [this tutorial][(https://developers.facebook.com/docs/whatsapp/business-management-api/guides/set-up-webhooks)](https://github.com/Radi-dev/webhook-forwarder) from the platform.
 
 If you're like me however, you wouldn't want to always deploy before you test, you want to run everything on local first. In this case, you might decide to use Ngrok to tunnel a live url to your local server, but another issue arises; Since Ngrok generates a new url each time it is restarted, you'd have to constantly log in to facebook servers to register the newly generated url. I presume you don't want that hassle either. In this situation, a webhook forwarder can be deployed to a virtual server like Heroku, and it doesn't get modified. You register the deployed forwarder's url on Whatsapp servers, it receives all the webhook requests and forwards them to your local machine using ngrok.
 
@@ -125,3 +127,6 @@ This is an opensource project under `MIT License` so any one is welcome to contr
 
 1. [WhatsApp Cloud API official documentation](https://developers.facebook.com/docs/whatsapp/cloud-api/)
 
+## All the credit
+
+2. All other contributors
