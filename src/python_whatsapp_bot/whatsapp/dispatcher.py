@@ -1,9 +1,8 @@
 import inspect
-from typing import Callable, Union
+from typing import Callable
 from .markup import Reply_markup
 from .error_handlers import keys_exists
 import re
-import requests
 from .user_context import User_context
 #from queue import Queue
 from threading import Thread
@@ -32,9 +31,13 @@ class Update:
             self.interactive_text = self.message["interactive"]["button_reply"]
             self.message_text = self.message["interactive"]["button_reply"]['id']
 
-    def reply_message(self, text: str, reply_markup: Reply_markup = None, header: str = None, footer: str = None, web_page_preview=True, *args, **kwargs):
+    def reply_message(self, text: str, reply_markup: Reply_markup = None, header: str = None, header_type: str = "text", footer: str = None, web_page_preview=True, *args, **kwargs):
         self.bot.send_message(self.user_phone_number, text, reply_markup=reply_markup,
-                              header=header, footer=footer, web_page_preview=web_page_preview, *args, **kwargs)
+                              header=header, header_type=header_type, footer=footer, web_page_preview=web_page_preview, *args, **kwargs)
+
+    def reply_media(self, media_path, caption: str = None, media_provider_token: str = None, *args, **kwargs):
+        self.bot.send_media_message(
+            self.user_phone_number, media_path, caption, media_provider_token, *args, **kwargs)
 
 
 class Update_handler:
@@ -46,6 +49,7 @@ class Update_handler:
         self.context = context
         self.list = None
         self.button = None
+        self.persistent = False
 
     def filter_check(self, msg) -> bool:
         if self.regex:
@@ -68,18 +72,19 @@ class Update_handler:
 
 
 class Message_handler(Update_handler):
-    def __init__(self, regex: str = None, func: Callable = None, action: Callable = None, context: bool = True) -> None:
+    def __init__(self, regex: str = None, func: Callable = None, action: Callable = None, context: bool = True, persistent: bool = False) -> None:
         super().__init__(context)
         self.name = "text"
         self.regex = regex
         self.func = func
         self.action = action
+        self.persistent = persistent
 
 
 class Interactive_query_handler(Update_handler):
     """For button_reply and list_reply"""
 
-    def __init__(self, regex: str = None, func: Callable = None, handle_button: bool = True, handle_list: bool = True, action: Callable = None, context: bool = True) -> None:
+    def __init__(self, regex: str = None, func: Callable = None, handle_button: bool = True, handle_list: bool = True, action: Callable = None, context: bool = True, persistent: bool = False) -> None:
         super().__init__(context)
         self.name = "interactive"
         self.regex = regex
@@ -87,6 +92,7 @@ class Interactive_query_handler(Update_handler):
         self.action = action
         self.list = handle_list
         self.button = handle_button
+        self.persistent = persistent
 
 
 class Location_handler(Update_handler):
@@ -131,7 +137,6 @@ class Dispatcher:
             else:
                 Thread(target=self._process_queue(_update)).start()
             if self.queue.empty():
-                print("finished q")
                 break
 
     def _process_queue(self, update) -> None:
@@ -151,6 +156,8 @@ class Dispatcher:
             print(update.message)
 
             # check if a next step handler has been registered
+            persistent_handlers = [
+                i for i in self.registered_handlers if i.persistent]
             try:
                 users_next_step = self.next_step_handler[update.user_phone_number]
                 users_next_step_handler = users_next_step['next_step_handler']
@@ -164,10 +171,15 @@ class Dispatcher:
             # get registered handlers if no next step handler
             except KeyError:
                 matched_handlers = [i for i in self.registered_handlers]
+            # print(len(persistent_handlers), len(matched_handlers))
+            matched_handlers = persistent_handlers+matched_handlers
             for handler in matched_handlers:
-                if isinstance(handler, Update_handler) and handler.name == _message["type"]:
+                # print(len(persistent_handlers), len(matched_handlers))
+                # print(handler.name, handler.regex)
+                if (isinstance(handler, Update_handler) and handler.name == _message["type"]) or isinstance(handler, Update_handler):
 
                     # handle text
+                    message_txt = ''
                     if _message["type"] == "text":
                         message_txt = _message["text"]["body"]
 
@@ -177,8 +189,8 @@ class Dispatcher:
                             message_txt = _message["interactive"]['button_reply']['id']
                         elif _message["interactive"]["type"] == 'list_reply' and handler.list:
                             message_txt = _message["interactive"]['list_reply']['id']
-                        else:
-                            return
+                        # else:
+                        #     return
                     res = self._check_and_run_handler(
                         handler, value, message_txt)
                     if res:
@@ -187,7 +199,10 @@ class Dispatcher:
                                 del self.next_step_handler[update.user_phone_number]
                             return
                         except KeyError:
+                            # print("key error", handler.regex)
                             return
+                    else:
+                        continue
 
     def _check_and_run_handler(self, handler, value, message):
         if hasattr(handler, 'filter_check'):
@@ -207,7 +222,7 @@ class Dispatcher:
         handler_index = len(self.registered_handlers)-1
         return handler_index
 
-    def set_next_handler(self, update: Update, function: Callable, handler_type: Update_handler = Message_handler, regex: str = None, func: Callable = None, end_conversation_action: Callable = lambda x: x, end_conversation_keyword_regex: str = r"(?i)^(end|stop|cancel)$"):
+    def set_next_handler(self, update: Update, function: Callable, handler_type: Update_handler = Update_handler, regex: str = None, func: Callable = None, end_conversation_action: Callable = lambda x: x, end_conversation_keyword_regex: str = r"(?i)^(end|stop|cancel)$"):
         """Sets a function for handling of next update. 
         The set_next_handler overrides other handlers till it handles an update itself"""
         if not issubclass(handler_type, Update_handler):
@@ -221,22 +236,35 @@ class Dispatcher:
         if handler_type == Message_handler:
             users_next['next_step_handler'] = Message_handler(
                 regex, func, action=function)
-        if handler_type == Interactive_query_handler:
+        elif handler_type == Interactive_query_handler:
             users_next['next_step_handler'] = Interactive_query_handler(
                 regex, func, action=function)
+        else:
+            try:
+                # _type = update["entry"][0]["changes"][0]["value"]["messages"][0]["type"]
+                _type = update.value["messages"][0]["type"]
+                print("new handler", _type)
+                new_handler = Update_handler()
+                # new_handler.name = _type
+                new_handler.regex = regex
+                new_handler.func = func
+                new_handler.action = function
+                users_next['next_step_handler'] = new_handler
+            except KeyError:
+                return
 
-    def add_message_handler(self, regex: str = None, func: Callable = None, context: bool = True):
+    def add_message_handler(self, regex: str = None, func: Callable = None, context: bool = True, persistent: bool = False):
         def inner(function):
             _handler = Message_handler(
-                regex=regex, func=func, action=function, context=context)
+                regex=regex, func=func, action=function, context=context, persistent=persistent)
             self.add_handler(_handler)
             return function
         return inner
 
-    def add_interactive_handler(self, regex: str = None, func: Callable = None, handle_button: bool = True, handle_list: bool = True, action: Callable = None, context: bool = True):
+    def add_interactive_handler(self, regex: str = None, func: Callable = None, handle_button: bool = True, handle_list: bool = True, action: Callable = None, context: bool = True, persistent: bool = False):
         def inner(function):
             _handler = Interactive_query_handler(
-                regex=regex, func=func, action=function, handle_button=handle_button, handle_list=handle_list, context=context)
+                regex=regex, func=func, action=function, handle_button=handle_button, handle_list=handle_list, context=context, persistent=persistent)
             self.add_handler(_handler)
             return function
         return inner

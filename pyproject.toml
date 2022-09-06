@@ -1,3 +1,27 @@
 [build-system]
-requires = ["setuptools>=42","requests"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-whatsapp-bot"
+version = "0.0.5"
+authors = [{name="Radi", email="evaradi18@gmail.com"},]
+description = "A whatsapp client library for python using the new WhatsApp cloud API"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "requests>=2",
+]
+
+[options.packages.find]
+where = "src"
+
+[project.urls]
+"Homepage" = "https://github.com/Radi-dev/python-whatsapp-cloud-bot"
+"Bug Tracker" = "https://github.com/Radi-dev/python-whatsapp-cloud-bot/issues"

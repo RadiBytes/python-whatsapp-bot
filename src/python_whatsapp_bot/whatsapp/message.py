@@ -1,3 +1,4 @@
+import re
 from typing import Union
 import json
 import requests
@@ -34,7 +35,7 @@ def message_text(url: str, token: str, phone_num: str, text: str, web_page_previ
     return response
 
 
-def message_interactive(url: str, token: str, phone_num: str, text: str, reply_markup: Reply_markup, header: str = None, footer: str = None, web_page_preview=True):
+def message_interactive(url: str, token: str, phone_num: str, text: str, reply_markup: Reply_markup, header: str = None, header_type: str = "text", footer: str = None, web_page_preview=True):
     if not isinstance(reply_markup, Reply_markup):
         raise ValueError("Reply markup must be a Reply_markup object")
     message_frame = {
@@ -49,10 +50,21 @@ def message_interactive(url: str, token: str, phone_num: str, text: str, reply_m
             },
             "action": reply_markup.markup}}
     if header:
-        message_frame["interactive"]["header"] = {
-            "type": "text",
-            "text": header
-        }
+        if header_type == 'text':
+            message_frame["interactive"]["header"] = {
+                "type": 'text',  # [text,video,image,document]
+                "text": header
+            }
+        elif header_type in ['image', 'video', 'document']:
+            if re.match(r"^((http[s]?://)|(www.))", header):
+                header_type_object = {'link': header}
+            else:
+                header_type_object = {'id': header}
+            message_frame["interactive"]["header"] = {
+                "type": header_type,  # [text,video,image,document]
+                header_type: header_type_object
+            }
+
     if footer:
         message_frame["interactive"]["footer"] = {
             "text": footer
@@ -83,6 +95,32 @@ def _get_markup_type(markup):
         return "button"
     elif isinstance(markup, Inline_list):
         return "list"
+
+
+def upload_media(url: str, token: str,):
+    payload = json.dumps({
+        "messaging_product": "whatsapp",
+    })
+    response = requests.post(url, headers=headers(token), data=payload)
+    # print(response.text)
+    return response
+
+
+def message_media(url: str, token: str, phone_num: str, image_path: str, caption: str = None, media_provider_token: str = None):
+    payload = json.dumps({
+        "messaging_product": "whatsapp",
+        "to": str(phone_num),
+        "recipient_type": "individual",
+        "type": "image",
+        "image": {
+            # "id" : "MEDIA-OBJECT-ID"
+            "link": image_path,
+            "caption": caption
+        }})
+    print("kkkiiiimmmmggg", image_path, phone_num)
+    response = requests.post(url, headers=headers(token), data=payload)
+    # print(response.text)
+    return response
 
 
 def message_location(url: str, token: str, phone_num: str, text: str, web_page_preview=True):
