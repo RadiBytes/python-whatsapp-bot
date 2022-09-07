@@ -20,10 +20,17 @@ A whatsapp client library for python utilizing the [WhatsApp Business Cloud API]
 
 ## Getting started
 
-To start, clone this repository Or manually download and extract it into your **existing** project directory
+To start, install with pip:
+```
+pip3 install python-whatsapp-bot
 
 ```
-$ git clone https://github.com/Radi-dev/pyWhatsappCloudApiBot.git
+or
+
+clone or download this repository and extract it into your **existing** project directory
+
+```
+$ git clone https://github.com/Radi-dev/python-whatsapp-bot.git
 ```
 
 Install dependencies
