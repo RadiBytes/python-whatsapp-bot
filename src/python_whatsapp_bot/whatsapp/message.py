@@ -117,7 +117,6 @@ def message_media(url: str, token: str, phone_num: str, image_path: str, caption
             "link": image_path,
             "caption": caption
         }})
-    print("kkkiiiimmmmggg", image_path, phone_num)
     response = requests.post(url, headers=headers(token), data=payload)
     # print(response.text)
     return response

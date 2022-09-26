@@ -153,7 +153,7 @@ class Dispatcher:
             if self.mark_as_read:
                 self.bot.mark_as_read(_message)
             update = Update(self.bot, value)
-            print(update.message)
+            # print(update.message)
 
             # check if a next step handler has been registered
             persistent_handlers = [
@@ -243,7 +243,6 @@ class Dispatcher:
             try:
                 # _type = update["entry"][0]["changes"][0]["value"]["messages"][0]["type"]
                 _type = update.value["messages"][0]["type"]
-                print("new handler", _type)
                 new_handler = Update_handler()
                 # new_handler.name = _type
                 new_handler.regex = regex

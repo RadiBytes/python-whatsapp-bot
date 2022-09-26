@@ -25,5 +25,5 @@ class User_context():
             _context._add_user(phone_num)
         self.user_data = _context.users_data[str(phone_num)]
 
-    def user_data(self):
-        pass
+    # def user_data(self):
+    #     pass
