@@ -4,8 +4,8 @@ A whatsapp client library for python utilizing the [WhatsApp Business Cloud API]
 
 [![Made in Nigeria](https://img.shields.io/badge/made%20in-nigeria-008751.svg?style=flat-square)](https://github.com/acekyd/made-in-nigeria)
 [![Downloads](https://pepy.tech/badge/python-whatsapp-bot)](https://pepy.tech/project/python-whatsapp-bot)
-[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot/month)](https://pepy.tech/project/pyWhatsappCloudApiBot)
-[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot/week)](https://pepy.tech/project/pyWhatsappCloudApiBot)
+[![Downloads](https://pepy.tech/badge/python-whatsapp-bot/month)](https://pepy.tech/project/python-whatsapp-bot)
+[![Downloads](https://pepy.tech/badge/python-whatsapp-bot/week)](https://pepy.tech/project/python-whatsapp-bot)
 
 ## Features supported
 
