@@ -25,25 +25,6 @@ To start, install with pip:
 pip3 install --upgrade python-whatsapp-bot
 
 ```
-or
-
-clone or download this repository and extract it into your **existing** project directory
-
-```
-$ git clone https://github.com/Radi-dev/python-whatsapp-bot.git
-```
-
-Install dependencies
-
-```bash
-# For Windows
-
-pip install -r python-whatsapp-bot/requirements.txt
-
-#For Linux | MAC
-
-pip3 install -r python-whatsapp-bot/requirements.txt
-```
 
 ## Setting up
 
