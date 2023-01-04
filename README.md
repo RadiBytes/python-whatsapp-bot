@@ -22,7 +22,7 @@ A whatsapp client library for python utilizing the [WhatsApp Business Cloud API]
 
 To start, install with pip:
 ```
-pip3 install python-whatsapp-bot
+pip3 install --upgrade python-whatsapp-bot
 
 ```
 or
