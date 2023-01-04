@@ -15,7 +15,7 @@ A whatsapp client library for python utilizing the [WhatsApp Business Cloud API]
 4. [Sending replies to received messages](/examples/echo_bot.py)
 5. [Handling received text](/examples/reply_message_bot.py)
 6. [Handling received interactive button](/examples/reply_interactive_message_bot.py)
-7. [Engaging in a continuous conversations](/examples/conversation_bot_1.py)
+7. [Engaging in continuous conversations](/examples/conversation_bot_1.py)
 8. [Engaging in advanced conversations](/examples/conversation_bot_1.py)
 
 ## Getting started
