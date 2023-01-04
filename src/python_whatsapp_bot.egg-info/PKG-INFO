@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: python-whatsapp-bot
-Version: 0.0.8
+Version: 0.0.9
 Summary: A whatsapp client library for python using the new WhatsApp cloud API
 Author-email: Radi <evaradi18@gmail.com>
 License: MIT License
@@ -34,14 +34,14 @@ Requires-Python: >=3.7
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
-# pyWhatsappCloudApiBot
+# python-whatsapp-bot
 
 A whatsapp client library for python utilizing the [WhatsApp Business Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api).
 
 [![Made in Nigeria](https://img.shields.io/badge/made%20in-nigeria-008751.svg?style=flat-square)](https://github.com/acekyd/made-in-nigeria)
-[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot)](https://pepy.tech/project/pyWhatsappCloudApiBot)
-[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot/month)](https://pepy.tech/project/pyWhatsappCloudApiBot)
-[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot/week)](https://pepy.tech/project/pyWhatsappCloudApiBot)
+[![Downloads](https://pepy.tech/badge/python-whatsapp-bot)](https://pepy.tech/project/python-whatsapp-bot)
+[![Downloads](https://pepy.tech/badge/python-whatsapp-bot/month)](https://pepy.tech/project/python-whatsapp-bot)
+[![Downloads](https://pepy.tech/badge/python-whatsapp-bot/week)](https://pepy.tech/project/python-whatsapp-bot)
 
 ## Features supported
 
@@ -51,15 +51,22 @@ A whatsapp client library for python utilizing the [WhatsApp Business Cloud API]
 4. [Sending replies to received messages](/examples/echo_bot.py)
 5. [Handling received text](/examples/reply_message_bot.py)
 6. [Handling received interactive button](/examples/reply_interactive_message_bot.py)
-7. [Engaging in a continuous conversations](/examples/conversation_bot_1.py)
+7. [Engaging in continuous conversations](/examples/conversation_bot_1.py)
 8. [Engaging in advanced conversations](/examples/conversation_bot_1.py)
 
 ## Getting started
 
-To start, clone this repository Or manually download and extract it into your **existing** project directory
+To start, install with pip:
+```
+pip3 install python-whatsapp-bot
 
 ```
-$ git clone https://github.com/Radi-dev/pyWhatsappCloudApiBot.git
+or
+
+clone or download this repository and extract it into your **existing** project directory
+
+```
+$ git clone https://github.com/Radi-dev/python-whatsapp-bot.git
 ```
 
 Install dependencies
@@ -67,11 +74,11 @@ Install dependencies
 ```bash
 # For Windows
 
-pip install -r pyWhatsappCloudApiBot/requirements.txt
+pip install -r python-whatsapp-bot/requirements.txt
 
 #For Linux | MAC
 
-pip3 install -r pyWhatsappCloudApiBot/requirements.txt
+pip3 install -r python-whatsapp-bot/requirements.txt
 ```
 
 ## Setting up
@@ -90,7 +97,7 @@ Now you have all you need to start using this library.
 To initialize the app instance, you need to specify the `TOKEN` and `phone_number_id` you obtained from the steps above. Note that phone number id is not phone number.
 
 ```python
->>> from pyWhatsappCloudApiBot import Whatsapp
+>>> from python_whatsapp_bot import Whatsapp
 >>> wa_bot = Whatsapp(number_id='305xxxxxx', token=TOKEN)
 ```
 
@@ -106,7 +113,7 @@ To send a text message
 
 ### Example
 
-Here an example
+Here is an example
 
 ```python
 >>> wa_bot.send_message('2348945434343', 'Your message here')
@@ -119,14 +126,14 @@ For buttons and lists, use the same send_message endpoint but with a reply_marku
 ####For buttons
 
 ```python
->>> from pyWhatsappCloudApiBot import Inline_keyboard # Import inline_keyboard for interactive buttons
+>>> from from python_whatsapp_bot import Inline_keyboard # Import inline_keyboard for interactive buttons
 >>> wa_bot.send_message('2348945434343', 'This is a message with two buttons',reply_markup=Inline_keyboard(['First button', 'Second button']))
 ```
 
 ####For lists
 
 ```python
->>> from pyWhatsappCloudApiBot import Inline_list, List_item # Import inline_list and List_item for interactive list
+>>> from python_whatsapp_bot import Inline_list, List_item # Import inline_list and List_item for interactive list
 >>> wa_bot.send_message('2348945434343', 'This is a message with lists',reply_markup=Inline_list("Show list",list_items=[[List_item("one list item")]])
 ```
 

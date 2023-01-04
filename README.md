@@ -38,11 +38,11 @@ Install dependencies
 ```bash
 # For Windows
 
-pip install -r pyWhatsappCloudApiBot/requirements.txt
+pip install -r python-whatsapp-bot/requirements.txt
 
 #For Linux | MAC
 
-pip3 install -r pyWhatsappCloudApiBot/requirements.txt
+pip3 install -r python-whatsapp-bot/requirements.txt
 ```
 
 ## Setting up
@@ -61,7 +61,7 @@ Now you have all you need to start using this library.
 To initialize the app instance, you need to specify the `TOKEN` and `phone_number_id` you obtained from the steps above. Note that phone number id is not phone number.
 
 ```python
->>> from pyWhatsappCloudApiBot import Whatsapp
+>>> from python_whatsapp_bot import Whatsapp
 >>> wa_bot = Whatsapp(number_id='305xxxxxx', token=TOKEN)
 ```
 
@@ -77,7 +77,7 @@ To send a text message
 
 ### Example
 
-Here an example
+Here is an example
 
 ```python
 >>> wa_bot.send_message('2348945434343', 'Your message here')
@@ -90,14 +90,14 @@ For buttons and lists, use the same send_message endpoint but with a reply_marku
 ####For buttons
 
 ```python
->>> from pyWhatsappCloudApiBot import Inline_keyboard # Import inline_keyboard for interactive buttons
+>>> from from python_whatsapp_bot import Inline_keyboard # Import inline_keyboard for interactive buttons
 >>> wa_bot.send_message('2348945434343', 'This is a message with two buttons',reply_markup=Inline_keyboard(['First button', 'Second button']))
 ```
 
 ####For lists
 
 ```python
->>> from pyWhatsappCloudApiBot import Inline_list, List_item # Import inline_list and List_item for interactive list
+>>> from python_whatsapp_bot import Inline_list, List_item # Import inline_list and List_item for interactive list
 >>> wa_bot.send_message('2348945434343', 'This is a message with lists',reply_markup=Inline_list("Show list",list_items=[[List_item("one list item")]])
 ```
 
