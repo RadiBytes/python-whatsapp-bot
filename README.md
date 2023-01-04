@@ -1,11 +1,11 @@
-# pyWhatsappCloudApiBot
+# python-whatsapp-bot
 
 A whatsapp client library for python utilizing the [WhatsApp Business Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api).
 
 [![Made in Nigeria](https://img.shields.io/badge/made%20in-nigeria-008751.svg?style=flat-square)](https://github.com/acekyd/made-in-nigeria)
-[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot)](https://pepy.tech/project/pyWhatsappCloudApiBot)
-[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot/month)](https://pepy.tech/project/pyWhatsappCloudApiBot)
-[![Downloads](https://pepy.tech/badge/pyWhatsappCloudApiBot/week)](https://pepy.tech/project/pyWhatsappCloudApiBot)
+[![Downloads](https://pepy.tech/badge/python-whatsapp-bot)](https://pepy.tech/project/python-whatsapp-bot)
+[![Downloads](https://pepy.tech/badge/python-whatsapp-bot/month)](https://pepy.tech/project/python-whatsapp-bot)
+[![Downloads](https://pepy.tech/badge/python-whatsapp-bot/week)](https://pepy.tech/project/python-whatsapp-bot)
 
 ## Features supported
 
@@ -15,15 +15,22 @@ A whatsapp client library for python utilizing the [WhatsApp Business Cloud API]
 4. [Sending replies to received messages](/examples/echo_bot.py)
 5. [Handling received text](/examples/reply_message_bot.py)
 6. [Handling received interactive button](/examples/reply_interactive_message_bot.py)
-7. [Engaging in a continuous conversations](/examples/conversation_bot_1.py)
+7. [Engaging in continuous conversations](/examples/conversation_bot_1.py)
 8. [Engaging in advanced conversations](/examples/conversation_bot_1.py)
 
 ## Getting started
 
-To start, clone this repository Or manually download and extract it into your **existing** project directory
+To start, install with pip:
+```
+pip3 install python-whatsapp-bot
 
 ```
-$ git clone https://github.com/Radi-dev/pyWhatsappCloudApiBot.git
+or
+
+clone or download this repository and extract it into your **existing** project directory
+
+```
+$ git clone https://github.com/Radi-dev/python-whatsapp-bot.git
 ```
 
 Install dependencies
