@@ -13,3 +13,7 @@ venv/
 ENV/
 
 data.py
+
+#dists
+dist/
+src/python_whatsapp_bot.egg-info/
