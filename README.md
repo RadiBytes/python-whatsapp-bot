@@ -9,19 +9,29 @@ A whatsapp client library for python utilizing the [WhatsApp Business Cloud API]
 
 ## Features supported
 
-1. [Sending messages](#sending-messages)
-2. [Sending interactive messages](#sending-interactive-messages)
-3. [Sending template messages](#sending-template-messages)
-4. [Sending replies to received messages](/examples/echo_bot.py)
-5. [Handling received text](/examples/reply_message_bot.py)
-6. [Handling received interactive button](/examples/reply_interactive_message_bot.py)
-7. [Engaging in continuous conversations](/examples/conversation_bot_1.py)
-8. [Engaging in advanced conversations](/examples/conversation_bot_1.py)
+- [python-whatsapp-bot](#python-whatsapp-bot)
+  - [Features supported](#features-supported)
+  - [Getting started](#getting-started)
+  - [Setting up](#setting-up)
+  - [Initialization](#initialization)
+  - [Sending Messages](#sending-messages)
+    - [Example](#example)
+  - [Sending Interactive Messages](#sending-interactive-messages)
+    - [For buttons](#for-buttons)
+    - [For lists](#for-lists)
+  - [Sending Template Messages](#sending-template-messages)
+  - [Handling Incoming Messages](#handling-incoming-messages)
+    - [A short note about **Webhooks**](#a-short-note-about-webhooks)
+  - [Issues](#issues)
+  - [Contributing](#contributing)
+  - [References](#references)
+  - [All the credit](#all-the-credit)
 
 ## Getting started
 
 To start, install with pip:
-```
+
+```bash
 pip3 install --upgrade python-whatsapp-bot
 
 ```
@@ -48,7 +58,7 @@ To initialize the app instance, you need to specify the `TOKEN` and `phone_numbe
 
 Once initialized, you can start using some of the bot's features right away.
 
-##Sending Messages
+## Sending Messages
 
 To send a text message
 
@@ -64,18 +74,18 @@ Here is an example
 >>> wa_bot.send_message('2348945434343', 'Your message here')
 ```
 
-##Sending Interactive Messages
+## Sending Interactive Messages
 
 For buttons and lists, use the same send_message endpoint but with a reply_markup parameter. e.g
 
-####For buttons
+### For buttons
 
 ```python
 >>> from from python_whatsapp_bot import Inline_keyboard # Import inline_keyboard for interactive buttons
 >>> wa_bot.send_message('2348945434343', 'This is a message with two buttons',reply_markup=Inline_keyboard(['First button', 'Second button']))
 ```
 
-####For lists
+### For lists
 
 ```python
 >>> from python_whatsapp_bot import Inline_list, List_item # Import inline_list and List_item for interactive list
@@ -92,16 +102,16 @@ To send a pre-approved template message:
 
 ## Handling Incoming Messages
 
-#### A short note about **Webhooks**
+### A short note about **Webhooks**
 
 For every message sent to your bot business account, whatsapp sends an object containing the message as a post request to a url which you have to provide beforehand. The url you provide should be able to process simple get and post requests. This url is the webhook url, and the object whatsapp sends to your url is the webhook.
 
 Now, you can write a small server with the Python Flask library to handle the webhook requests, but another problem arises if you're developing on a local server; whatsapp will not be able to send requests to your localhost url, so a quick fix would be to deploy your project to an online server each time you make a change to be able to test it.
-Once deployed, you can proceed to register the url of your deployed app using [this tutorial][(https://developers.facebook.com/docs/whatsapp/business-management-api/guides/set-up-webhooks)](https://github.com/Radi-dev/webhook-forwarder) from the platform.
+Once deployed, you can proceed to register the url of your deployed app using [this tutorial](https://developers.facebook.com/docs/whatsapp/business-management-api/guides/set-up-webhooks) from the platform.
 
 If you're like me however, you wouldn't want to always deploy before you test, you want to run everything on local first. In this case, you might decide to use Ngrok to tunnel a live url to your local server, but another issue arises; Since Ngrok generates a new url each time it is restarted, you'd have to constantly log in to facebook servers to register the newly generated url. I presume you don't want that hassle either. In this situation, a webhook forwarder can be deployed to a virtual server like Heroku, and it doesn't get modified. You register the deployed forwarder's url on Whatsapp servers, it receives all the webhook requests and forwards them to your local machine using ngrok.
 
-To continue with this fowarding process, open this repository https://github.com/Radi-dev/webhook-forwarder and follow the readme instructions to deploy it and setup a client for it on your device, then register the url following [this guide](https://github.com/Radi-dev/webhook-forwarder).
+To continue with this fowarding process, open this repository <https://github.com/Radi-dev/webhook-forwarder> and follow the readme instructions to deploy it and setup a client for it on your device, then register the url following [this guide](https://github.com/Radi-dev/webhook-forwarder).
 
 ## Issues
 
@@ -109,7 +119,7 @@ Please open an issue to draw my attention to mistake or suggestion
 
 ## Contributing
 
-This is an opensource project under `MIT License` so any one is welcome to contribute from typo, to source code to documentation, `JUST FORK IT`.
+This is an opensource project under `MIT License` so anyone is welcome to contribute from typo, to source code to documentation, `JUST FORK IT`.
 
 ## References
 
@@ -117,4 +127,4 @@ This is an opensource project under `MIT License` so any one is welcome to contr
 
 ## All the credit
 
-2. All other contributors
+1. All contributors
