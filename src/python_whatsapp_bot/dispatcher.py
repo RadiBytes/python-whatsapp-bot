@@ -32,11 +32,11 @@ class Update:
             self.message_text = self.message["interactive"]["button_reply"]['id']
 
     def reply_message(self, text: str, reply_markup: Reply_markup = None, header: str = None, header_type: str = "text", footer: str = None, web_page_preview=True, *args, **kwargs):
-        self.bot.send_message(self.user_phone_number, text, reply_markup=reply_markup,
+        return self.bot.send_message(self.user_phone_number, text, reply_markup=reply_markup,
                               header=header, header_type=header_type, footer=footer, web_page_preview=web_page_preview, *args, **kwargs)
 
     def reply_media(self, media_path, caption: str = None, media_provider_token: str = None, *args, **kwargs):
-        self.bot.send_media_message(
+        return self.bot.send_media_message(
             self.user_phone_number, media_path, caption, media_provider_token, *args, **kwargs)
 
 
@@ -223,7 +223,7 @@ class Dispatcher:
         return handler_index
 
     def set_next_handler(self, update: Update, function: Callable, handler_type: Update_handler = Update_handler, regex: str = None, func: Callable = None, end_conversation_action: Callable = lambda x: x, end_conversation_keyword_regex: str = r"(?i)^(end|stop|cancel)$"):
-        """Sets a function for handling of next update. 
+        """Sets a function for handling of next update.
         The set_next_handler overrides other handlers till it handles an update itself"""
         if not issubclass(handler_type, Update_handler):
             return "type should be an Update_handler class"
