@@ -114,7 +114,11 @@ class Whatsapp:
             )
 
     def send_template_message(
-        self, phone_num: str, template_name: str, components: list, language_code: str
+        self,
+        phone_num: str,
+        template_name: str,
+        components: list,
+        language_code: str = None,
     ):
         """Sends preregistered template message"""
         return message_template(
