@@ -1,1 +1,1 @@
-from src.python_whatsapp_bot import *
+from .src.python_whatsapp_bot import *

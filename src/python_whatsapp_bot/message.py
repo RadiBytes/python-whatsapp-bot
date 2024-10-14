@@ -1,3 +1,6 @@
+import mimetypes
+import os
+from pathlib import Path
 import re
 from typing import Union
 import json
@@ -11,6 +14,28 @@ from .markup import (
     List_section,
 )
 
+TIMEOUT: int = 30
+KNOWN_EXTENSIONS = {
+    "text/plain": ".txt",
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/gif": ".gif",
+    "video/mp4": ".mp4",
+    "audio/mp3": ".mp3",
+    "audio/mpeg": ".mp3",
+    "audio/wav": ".wav",
+    "audio/aac": ".aac",
+    "audio/ogg": ".opus",
+    "audio/webm": ".webm",
+    "application/pdf": ".pdf",
+    "application/msword": ".doc",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+    "application/vnd.ms-powerpoint": ".ppt",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation": ".pptx",
+    "application/vnd.ms-excel": ".xls",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+}
+
 
 def headers(WA_TOKEN):
     return {"Content-Type": "application/json", "Authorization": f"Bearer {WA_TOKEN}"}
@@ -20,25 +45,30 @@ def mark_as_read(update, url: str, token: str):
     payload = json.dumps(
         {"messaging_product": "whatsapp", "status": "read", "message_id": update["id"]}
     )
-    response = requests.post(url, headers=headers(token), data=payload)
-    # print(response.text)
+    response = requests.post(url, headers=headers(token), data=payload, timeout=TIMEOUT)
     return response
 
 
 def message_text(
-    url: str, token: str, phone_num: str, text: str, web_page_preview=True
+    url: str,
+    token: str,
+    phone_num: str,
+    text: str,
+    msg_id: str = "",
+    web_page_preview=True,
+    tag_message: bool = True,
 ):
-    payload = json.dumps(
-        {
-            "messaging_product": "whatsapp",
-            "to": str(phone_num),
-            "recipient_type": "individual",
-            "type": "text",
-            "text": {"body": text, "preview_url": web_page_preview},
-        }
-    )
-    response = requests.post(url, headers=headers(token), data=payload)
-    # print(response.text)
+    message_frame = {
+        "messaging_product": "whatsapp",
+        "to": str(phone_num),
+        "recipient_type": "individual",
+        "type": "text",
+        "text": {"body": text, "preview_url": web_page_preview},
+    }
+    if msg_id and tag_message:
+        message_frame["context"] = {"message_id": msg_id}
+    payload = json.dumps(message_frame)
+    response = requests.post(url, headers=headers(token), data=payload, timeout=TIMEOUT)
     return response
 
 
@@ -48,6 +78,7 @@ def message_interactive(
     phone_num: str,
     text: str,
     reply_markup: Reply_markup,
+    msg_id: str = "",
     header: str = None,
     header_type: str = "text",
     footer: str = None,
@@ -66,6 +97,8 @@ def message_interactive(
             "action": reply_markup.markup,
         },
     }
+    if msg_id:
+        message_frame["context"] = {"message_id": msg_id}
     if header:
         if header_type == "text":
             message_frame["interactive"]["header"] = {
@@ -85,7 +118,7 @@ def message_interactive(
     if footer:
         message_frame["interactive"]["footer"] = {"text": footer}
     payload = json.dumps(message_frame)
-    response = requests.post(url, headers=headers(token), data=payload)
+    response = requests.post(url, headers=headers(token), data=payload, timeout=TIMEOUT)
     return response
 
 
@@ -94,7 +127,7 @@ def message_template(
     token: str,
     phone_num: str,
     template_name: str,
-    components: list = [],
+    components: list = None,
     language_code: str = "en_US",
 ):
     payload = json.dumps(
@@ -106,12 +139,11 @@ def message_template(
             "template": {
                 "name": template_name,
                 "language": {"code": language_code},
-                "components": components,
+                "components": list(components) if components is not None else [],
             },
         }
     )
-    response = requests.post(url, headers=headers(token), data=payload)
-    # print(response.text)
+    response = requests.post(url, headers=headers(token), data=payload, timeout=TIMEOUT)
     return response
 
 
@@ -122,17 +154,52 @@ def _get_markup_type(markup):
         return "list"
 
 
-def upload_media(
-    url: str,
-    token: str,
-):
+def upload_media(url: str, token: str):
     payload = json.dumps(
         {
             "messaging_product": "whatsapp",
         }
     )
-    response = requests.post(url, headers=headers(token), data=payload)
-    # print(response.text)
+    response = requests.post(url, headers=headers(token), data=payload, timeout=TIMEOUT)
+    return response
+
+
+def get_media_url(base_url: str, media_id: str, token: str):
+    url = f"{base_url}/{media_id}"
+    print(url)
+    response = requests.get(url, headers=headers(token), timeout=TIMEOUT)
+    return response
+
+
+def download_media(
+    base_url: str, media_id: str, token: str, relative_file_path: str = "/media"
+):
+    # Generate the absolute file path from the relative path
+    file_path = Path("tmp/" + relative_file_path).resolve() / media_id
+
+    # Ensure the file has the correct extension
+    media_data = get_media_url(base_url, media_id, token).json()
+    media_url = media_data["url"]
+    mime_type = media_data["mime_type"]
+    extension = (
+        KNOWN_EXTENSIONS.get(mime_type)
+        or mimetypes.guess_extension(mime_type, strict=True)
+        or ".bin"
+    )
+
+    file_path = file_path.with_suffix(extension)
+
+    # Create the directory if it does not exist
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Download the media file
+    with requests.get(
+        media_url, headers=headers(token), stream=True, timeout=TIMEOUT
+    ) as response, open(file_path, "wb") as file:
+        for chunk in response.iter_content(chunk_size=8192):
+            if chunk:
+                file.write(chunk)
+
     return response
 
 
@@ -157,8 +224,7 @@ def message_media(
             },
         }
     )
-    response = requests.post(url, headers=headers(token), data=payload)
-    # print(response.text)
+    response = requests.post(url, headers=headers(token), data=payload, timeout=TIMEOUT)
     return response
 
 
@@ -174,6 +240,5 @@ def message_location(
             "text": {"body": text, "preview_url": web_page_preview},
         }
     )
-    response = requests.post(url, headers=headers(token), data=payload)
-    # print(response.text)
+    response = requests.post(url, headers=headers(token), data=payload, timeout=TIMEOUT)
     return response
