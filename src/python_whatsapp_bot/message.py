@@ -174,6 +174,8 @@ def get_media_url(base_url: str, media_id: str, token: str):
 def download_media(
     base_url: str, media_id: str, token: str, relative_file_path: str = "/media"
 ):
+    if not media_id:
+        return None
     # Generate the absolute file path from the relative path
     file_path = Path("tmp/" + relative_file_path).resolve() / media_id
 
@@ -200,7 +202,19 @@ def download_media(
             if chunk:
                 file.write(chunk)
 
-    return response
+    return file_path
+
+
+def download_media_data(
+    base_url: str, media_id: str, token: str, relative_file_path: str = "/media"
+):
+    if not media_id:
+        return None
+    media_data = get_media_url(base_url, media_id, token).json()
+    media_url = media_data["url"]
+
+    # Download the media file
+    return requests.get(media_url, headers=headers(token), stream=True, timeout=TIMEOUT)
 
 
 def message_media(

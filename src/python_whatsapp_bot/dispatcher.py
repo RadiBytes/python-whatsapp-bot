@@ -36,18 +36,6 @@ class Dispatcher:
         self.fallback_function = None
 
     def process_update(self, update) -> None:
-        # ------------new---------
-        # self._process_queue(update)
-        # ------------old3--------
-        # Thread(target=self._process_queue(update)).start()
-
-        # -----------old2------
-        # if not self.bot.threaded:
-        #     self._process_queue(update)
-        # else:
-        #     Thread(target=self._process_queue(update)).start()
-
-        # ---------------old------
         self.queue.put(update)
         while True:
             _update = self.queue.get()
@@ -55,6 +43,17 @@ class Dispatcher:
                 self._process_queue(_update)
             else:
                 Thread(target=self._process_queue(_update)).start()
+            if self.queue.empty():
+                break
+
+    async def aprocess_update(self, update) -> None:
+        self.queue.put(update)
+        while True:
+            _update = self.queue.get()
+            if not self.bot.threaded:
+                await self._aprocess_queue(_update)
+            else:
+                Thread(target=await self._aprocess_queue(_update)).start()
             if self.queue.empty():
                 break
 
@@ -124,6 +123,74 @@ class Dispatcher:
                     else:
                         continue
 
+    async def _aprocess_queue(self, update) -> None:
+        if not keys_exists(update, "entry", 0, "changes", 0, "value"):
+            return
+        value = update["entry"][0]["changes"][0]["value"]
+        # self.value = value
+        if not keys_exists(value, "metadata", "phone_number_id"):
+            return
+        if str(value["metadata"]["phone_number_id"]) == str(self.bot.id):
+            if not keys_exists(value, "messages"):
+                return
+            _message = value["messages"][0]
+            if self.mark_as_read:
+                self.bot.mark_as_read(_message)
+            update = Update(self.bot, value)
+            print("\n\nupdate: ", update)
+
+            # check if a next step handler has been registered
+            persistent_handlers = [i for i in self.registered_handlers if i.persistent]
+            try:
+                users_next_step = self.next_step_handler[update.user_phone_number]
+                users_next_step_handler = users_next_step["next_step_handler"]
+                matched_handlers = []
+                try:
+                    users_next_step_fallback = users_next_step["fallback_function"]
+                    matched_handlers.append(users_next_step_fallback)
+                except KeyError:
+                    pass
+                matched_handlers.append(users_next_step_handler)
+            # get registered handlers if no next step handler
+            except KeyError:
+                matched_handlers = list(self.registered_handlers)
+            matched_handlers = persistent_handlers + matched_handlers
+
+            for handler in matched_handlers:
+                # if (
+                #     isinstance(handler, UpdateHandler)
+                #     and handler.name == _message["type"]
+                # ) or isinstance(handler, UpdateHandler):
+                if (
+                    isinstance(handler, UpdateHandler)
+                    and handler.name == _message["type"]
+                ):
+
+                    # Get message text
+                    message_txt = handler.extract_data(_message).message_txt
+
+                    res = await self._acheck_and_run_handler(
+                        handler, value, message_txt
+                    )
+                    if res:
+                        try:
+                            if (
+                                self.next_step_handler[update.user_phone_number][
+                                    "next_step_handler"
+                                ]
+                                == handler
+                                or self.next_step_handler[update.user_phone_number][
+                                    "fallback_function"
+                                ]
+                                == handler
+                            ):
+                                del self.next_step_handler[update.user_phone_number]
+                            return
+                        except KeyError:
+                            return
+                    else:
+                        continue
+
     def _check_and_run_handler(self, handler: UpdateHandler, value, message):
         _message = value.get("messages", [{}])[0]
         if hasattr(handler, "filter_check"):
@@ -136,11 +203,33 @@ class Dispatcher:
                 update.message_text = handler.extract_data(_message).message_txt
                 for key, val in (extracted_data.__dict__).items():
                     setattr(update, key, val)
-                print("\n\nextracted_data: ", extracted_data.__dict__)
+                # print("\n\nextracted_data: ", extracted_data.__dict__)
 
                 handler.run(update, context=User_context(update.user_phone_number))
             else:
                 handler.run(update)
+            return True
+        return False
+
+    async def _acheck_and_run_handler(self, handler: UpdateHandler, value, message):
+        _message = value.get("messages", [{}])[0]
+        if hasattr(handler, "filter_check"):
+            if not handler.filter_check(message):
+                return False
+            if handler.context:
+                update = Update(self.bot, value)
+                extracted_data = handler.extract_data(_message)
+
+                update.message_text = handler.extract_data(_message).message_txt
+                for key, val in (extracted_data.__dict__).items():
+                    setattr(update, key, val)
+                # print("\n\nextracted_data: ", extracted_data.__dict__)
+
+                await handler.arun(
+                    update, context=User_context(update.user_phone_number)
+                )
+            else:
+                await handler.run(update)
             return True
         return False
 

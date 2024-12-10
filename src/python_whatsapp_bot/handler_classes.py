@@ -123,15 +123,9 @@ class UpdateHandler:
 
     def filter_check(self, msg) -> bool:
         if self.regex:
-            if re.match(self.regex, msg):
-                return True
-            else:
-                return False
+            return bool(re.match(self.regex, msg))
         if self.func:
-            if self.func(msg):
-                return True
-            else:
-                return False
+            return bool(self.func(msg))
         return True
 
     def run(self, *args, **kwargs):
@@ -141,6 +135,18 @@ class UpdateHandler:
             if key in inspect.getfullargspec(self.action).args
         }
         return self.action(*args, **new_kwargs)
+
+    async def arun(self, *args, **kwargs):
+        new_kwargs = {
+            key: val
+            for key, val in kwargs.items()
+            if key in inspect.getfullargspec(self.action).args
+        }
+        if not inspect.iscoroutinefunction(self.action):
+            raise TypeError(
+                f"function {self.action.__name__} must be an async function (coroutine), but it is not."
+            )
+        return await self.action(*args, **new_kwargs)
 
 
 class MessageHandler(UpdateHandler):

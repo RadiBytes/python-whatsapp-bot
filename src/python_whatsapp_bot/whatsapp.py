@@ -1,6 +1,7 @@
 from .dispatcher import Dispatcher, Update
 from .message import (
     download_media,
+    download_media_data,
     get_media_url,
     message_interactive,
     mark_as_read,
@@ -163,6 +164,9 @@ class Whatsapp:
 
     def download_media(self, media_id: str, file_path: str):
         return download_media(self.base_url, media_id, self.token, file_path)
+
+    def download_media_data(self, media_id: str, file_path: str):
+        return download_media_data(self.base_url, media_id, self.token, file_path)
 
     def send_media_message(
         self,
